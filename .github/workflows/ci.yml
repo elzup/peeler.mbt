@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/readme.md'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**/readme.md'
+
+jobs:
+  test-moonbit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup MoonBit
+        uses: hustcer/setup-moonbit@v1
+      - name: moon check
+        run: moon check
+      - name: moon test
+        run: moon test
