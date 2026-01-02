@@ -4,6 +4,54 @@
 
 MoonBit implementation of [peeler](https://github.com/elzup/peeler).
 
+## Examples
+
+```moonbit
+// Simple
+peeler("(hello)")
+// -> [Bracket{open:'(', nodes:[Text{content:"hello"}]}]
+
+// Nested brackets
+peeler("aa(bb{cc}bb)aa")
+// -> [Text("aa"), Bracket(...), Text("aa")]
+//                    └─ [Text("bb"), Bracket({cc}), Text("bb")]
+
+// Escape brackets
+peeler("a\\(b")
+// -> [Text{content:"a(b"}]
+
+// Mixed bracket types
+peeler("[({})]")
+// -> [Bracket [
+//       └─ Bracket (
+//            └─ Bracket {} ]]
+```
+
+## Dump Result
+
+```moonbit
+fn dump(nodes : Array[PNode], d~ : Int = 0) -> Array[String] {
+  let pad = "  ".repeat(d)
+  nodes.flat_map(fn(n) {
+    match n {
+      Text(t) => ["\{pad}\{t.content}"]
+      Bracket(b) => [["\{pad}\{b.open}"], dump(b.nodes, d=d + 1), ["\{pad}\{b.close}"]].flatten()
+    }
+  })
+}
+
+dump(peeler("aa(bb{cc}dd)ee")).join("\n")
+// aa
+// (
+//   bb
+//   {
+//     cc
+//   }
+//   dd
+// )
+// ee
+```
+
 ## Install
 
 ```
@@ -31,7 +79,7 @@ Parse text with default options (pairs: `()`, `{}`, `[]`).
 
 Parse text with custom options.
 
-### Types
+## Types
 
 ```moonbit
 enum PNode {
@@ -66,22 +114,6 @@ struct Options {
   include_empty: Bool       // default: false
   quotes: Array[String]     // default: []
 }
-```
-
-## Examples
-
-```moonbit
-// Simple
-peeler("(hello)")
-// -> [Bracket{open:'(', close:')', nodes:[Text{content:"hello"}]}]
-
-// Nested
-peeler("aa(bb{cc}bb)aa")
-// -> [Text("aa"), Bracket("(", ")", [Text("bb"), Bracket("{", "}", [Text("cc")]), Text("bb")]), Text("aa")]
-
-// Escape
-peeler("a\\(b")
-// -> [Text{content:"a(b"}]
 ```
 
 ## License

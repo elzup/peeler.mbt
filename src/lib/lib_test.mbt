@@ -407,6 +407,32 @@ test "depth values" {
   }
 }
 
+// Double escape tests
+// Current: \\ does NOT escape the backslash itself
+// ( after \ is always escaped, regardless of preceding backslashes
+
+test "double backslash both escaped" {
+  // Source: "a\\\\(b\\\\)" = actual string: a\\(b\\)
+  // Both ( and ) are escaped, so they become text
+  let result = peeler("a\\\\(b\\\\)")
+  inspect(result.length(), content="1")
+  match result[0] {
+    Text(t) => inspect(t.content, content="a\\(b\\)")
+    Bracket(_) => fail("Expected Text")
+  }
+}
+
+test "double backslash open only escaped - error" {
+  // Source: "a\\\\(b)" = actual string: a\\(b)
+  // ( is escaped, ) is not → ParseError
+  let result : Result[Array[PNode], Error] = try {
+    Ok(peeler("a\\\\(b)"))
+  } catch {
+    e => Err(e)
+  }
+  inspect(result is Err(_), content="true")
+}
+
 // Complex case from original
 test "gata gata - complex nested" {
   let result = peeler("aa({cc}bb{c2(dd)c2}b)aa(b2)aa")
