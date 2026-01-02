@@ -1,11 +1,2 @@
 {
-  "link": {
-    "js": {
-      "exports": [
-        "add",
-        "greet"
-      ],
-      "format": "esm"
-    }
-  }
 }
