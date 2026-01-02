@@ -77,10 +77,39 @@ fn substring(text : String, start : Int, end : Int) -> String {
   result.to_string()
 }
 
-/// Parse error type
+/// Error type raised when parsing fails.
+///
+/// Contains a descriptive error message indicating:
+/// - Missing closing bracket and its position
+/// - Missing opening bracket and its position
+/// - Unclosed quote and its position
+/// - Nesting depth exceeded
 pub suberror ParseError String
 
-/// Parse text into a tree of nodes
+/// Parses text into a tree of bracket nodes.
+///
+/// This is the core parsing function that converts a string into an array
+/// of `PNode` values representing the bracket structure.
+///
+/// # Parameters
+///
+/// - `text` - The input string to parse
+/// - `opt` - Parsing options (bracket pairs, quotes, etc.)
+///
+/// # Returns
+///
+/// An array of `PNode` values representing the parsed structure.
+///
+/// # Raises
+///
+/// - `ParseError` - If brackets are unmatched or nesting exceeds `nest_max`
+///
+/// # Example
+///
+/// ```moonbit
+/// let opt = default_options()
+/// let nodes = parse!("hello (world)", opt)
+/// ```
 pub fn parse(text : String, opt : Options) -> Array[PNode] raise ParseError {
   let closes = build_closes(opt.pairs)
   let opens = build_opens(opt.pairs)
@@ -253,12 +282,71 @@ pub fn parse(text : String, opt : Options) -> Array[PNode] raise ParseError {
   }
 }
 
-/// Main peeler function with default options
+/// Parses text with default options.
+///
+/// This is the main entry point for parsing bracket structures.
+/// Uses default bracket pairs: `()`, `{}`, `[]`.
+///
+/// # Parameters
+///
+/// - `text` - The input string to parse
+///
+/// # Returns
+///
+/// An array of `PNode` values representing the parsed structure.
+///
+/// # Raises
+///
+/// - `ParseError` - If brackets are unmatched or nesting exceeds limit
+///
+/// # Example
+///
+/// ```moonbit
+/// let nodes = peeler!("hello (world)")
+/// // nodes = [Text("hello "), Bracket("(", [Text("world")])]
+///
+/// // Nested brackets
+/// let nodes = peeler!("a(b{c}d)e")
+/// // nodes = [Text("a"), Bracket("(", [Text("b"), Bracket("{", ...), Text("d")]), Text("e")]
+///
+/// // Escape brackets with backslash
+/// let nodes = peeler!("a\\(b")
+/// // nodes = [Text("a(b")]
+/// ```
 pub fn peeler(text : String) -> Array[PNode] raise ParseError {
   parse(text, default_options())
 }
 
-/// Main peeler function with custom options
+/// Parses text with custom options.
+///
+/// Use this function when you need to customize bracket pairs,
+/// quotes, or other parsing behavior.
+///
+/// # Parameters
+///
+/// - `text` - The input string to parse
+/// - `opt` - Custom parsing options
+///
+/// # Returns
+///
+/// An array of `PNode` values representing the parsed structure.
+///
+/// # Raises
+///
+/// - `ParseError` - If brackets are unmatched or nesting exceeds limit
+///
+/// # Example
+///
+/// ```moonbit
+/// // Parse HTML-style angle brackets
+/// let opt = Options::with_pairs(["<>"])
+/// let nodes = peeler_with_options!("<div>content</div>", opt)
+///
+/// // Ignore brackets inside quotes
+/// let opt = Options::with_quotes(["\"\""])
+/// let nodes = peeler_with_options!("say \"(hello)\" now", opt)
+/// // "(hello)" is treated as text, not a bracket
+/// ```
 pub fn peeler_with_options(
   text : String,
   opt : Options

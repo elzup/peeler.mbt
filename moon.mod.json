@@ -1,8 +1,10 @@
 {
   "name": "elzup/peeler",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "readme": "readme.md",
   "license": "MIT",
   "repository": "https://github.com/elzup/peeler.mbt",
+  "description": "Bracket parser for MoonBit - parse nested bracket structures into tree nodes",
+  "keywords": ["parser", "bracket", "text", "tokenizer", "ast"],
   "source": "src"
 }
