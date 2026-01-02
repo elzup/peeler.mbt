@@ -1,0 +1,52 @@
+{
+  "name": "TODO",
+  "version": "0.0.0",
+  "description": "TODO",
+  "author": "elzup",
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
+  "repository": "elzup/TODO",
+  "bugs": {
+    "url": "https://github.com/elzup/TODO/issues"
+  },
+  "homepage": "https://github.com/elzup/TODO#readme",
+  "keywords": [
+    "moonbit",
+    "utils"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "clean": "rimraf lib target",
+    "build": "node scripts/build.js",
+    "test:mbt": "moon test",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:cov": "vitest run --coverage",
+    "test:all": "pnpm test:mbt && pnpm build && pnpm test",
+    "prepublishOnly": "pnpm test:all"
+  },
+  "files": [
+    "lib/"
+  ],
+  "sideEffects": false,
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.15",
+    "@vitest/ui": "^4.0.15",
+    "rimraf": "^6.1.2",
+    "vitest": "^4.0.15"
+  }
+}
