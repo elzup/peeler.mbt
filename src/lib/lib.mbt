@@ -67,9 +67,8 @@ fn remove_escapes(text : String, escape : Char, bracket_chars : Array[Char]) -> 
   result.to_string()
 }
 
-/// Substring helper
-fn substring(text : String, start : Int, end : Int) -> String {
-  let chars = text.to_array()
+/// Substring helper that reuses an already-materialized char array (O(end-start))
+fn substring_arr(chars : Array[Char], start : Int, end : Int) -> String {
   let result = StringBuilder::new()
   for i = start; i < end && i < chars.length(); i = i + 1 {
     result.write_char(chars[i])
@@ -162,7 +161,7 @@ pub fn parse(text : String, opt : Options) -> Array[PNode] raise ParseError {
         }
         if p < i || opt.include_empty {
           let content = remove_escapes(
-            substring(text, p, i),
+            substring_arr(chars, p, i),
             opt.escape,
             bracket_chars,
           )
@@ -211,7 +210,7 @@ pub fn parse(text : String, opt : Options) -> Array[PNode] raise ParseError {
             // Add final text in bracket
             if p < i || opt.include_empty {
               let content = remove_escapes(
-                substring(text, p, i),
+                substring_arr(chars, p, i),
                 opt.escape,
                 bracket_chars,
               )
@@ -230,8 +229,8 @@ pub fn parse(text : String, opt : Options) -> Array[PNode] raise ParseError {
                 open: bo.open,
                 close: c,
                 nodes: bo.nodes,
-                content: substring(text, bo.pos_start, i + 1),
-                inner_content: substring(text, bo.pos_start + 1, i),
+                content: substring_arr(chars, bo.pos_start, i + 1),
+                inner_content: substring_arr(chars, bo.pos_start + 1, i),
               },
             )
 
@@ -263,7 +262,7 @@ pub fn parse(text : String, opt : Options) -> Array[PNode] raise ParseError {
       // Add remaining text
       if p < chars.length() || opt.include_empty {
         let content = remove_escapes(
-          substring(text, p, chars.length()),
+          substring_arr(chars, p, chars.length()),
           opt.escape,
           bracket_chars,
         )
