@@ -1,0 +1,4 @@
+{
+  "import": ["elzup/peeler/lib"],
+  "test-import": [{ "path": "moonbitlang/core/bench", "alias": "bench" }]
+}
